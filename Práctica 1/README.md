@@ -12,3 +12,17 @@ La maquina posee los siguientes recursos:
 
 ## 2. Instalacion de docker
 
+Despues de iniciar la maquina virtual creada anteriormente se procede a la actualización de los programas y a la inslación de docker, siguiendo los pasos de la documentacion dada en clase que es la siguiente:
+
+- [Instalación de Docker en Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
+
+Para probar que quedo correctamenet se hacen dos procedimientos sencillos; el primero es mirar la versión y la segunda es correr un servidor de hello word
+```
+docker --version
+
+```
+
+```
+sudo docker run hello-world
+```
+![Ver imagen: Hello World](https://github.com/edierbra/Practicas_IoT/blob/main/Practica_1/Images/hello_world.png?raw=true)
