@@ -25,3 +25,24 @@ docker --version
 sudo docker run hello-world
 ```
 ![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/docker%20hello-word.png?raw=true)
+
+
+## Desarrollo Practica
+
+Para esta practica se necesita instalar la herramienta de red, las herramientas Isof, y para mayor facilidad al modificar los documentos, el gestor de archivos gedit, que se hace con el siguiente comando:
+
+```
+sudo apt install net-tools
+```
+![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/docker%20hello-word.png?raw=true)
+
+```
+sudo apt-get install lsof
+```
+![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/docker%20hello-word.png?raw=true)
+
+```
+sudo apt-get install gedit
+```
+![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/docker%20hello-word.png?raw=true)
+
