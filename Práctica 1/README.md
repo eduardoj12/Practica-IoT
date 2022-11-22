@@ -34,15 +34,15 @@ Para esta practica se necesita instalar la herramienta de red, las herramientas 
 ```
 sudo apt install net-tools
 ```
-![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/docker%20hello-word.png?raw=true)
+![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/instalacion%20net-tools.png?raw=true)
 
 ```
 sudo apt-get install lsof
 ```
-![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/docker%20hello-word.png?raw=true)
+![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/instalaci%C3%B3n%20Isof.png?raw=true)
 
 ```
 sudo apt-get install gedit
 ```
-![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/docker%20hello-word.png?raw=true)
+![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/instalaci%C3%B3n%20gedit.png?raw=true)
 
