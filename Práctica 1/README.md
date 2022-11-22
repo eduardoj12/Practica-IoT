@@ -19,10 +19,9 @@ Despues de iniciar la maquina virtual creada anteriormente se procede a la actua
 Para probar que quedo correctamenet se hacen dos procedimientos sencillos; el primero es mirar la versión y la segunda es correr un servidor de hello word
 ```
 docker --version
-
 ```
-
+![Ver imagen: versión Docker](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/version%20docker.png?raw=true)
 ```
 sudo docker run hello-world
 ```
-![Ver imagen: Hello World](https://github.com/edierbra/Practicas_IoT/blob/main/Practica_1/Images/hello_world.png?raw=true)
+![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/docker%20hello-word.png?raw=true)
