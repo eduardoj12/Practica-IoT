@@ -139,3 +139,71 @@ python3 client.py
 Que para ver que puerto se utilizo se hace uso del comando ```lsof -i -P -n```, que se observa que se ha utilizado el puerto **10000** para la conexion servidor-cliente.
 
 ![puerto 1000](https://user-images.githubusercontent.com/118281449/203447510-aedfab3f-fe5d-4045-91c8-70ef6d39e273.png)
+
+De la misma manera se hace para la **Conexion UDP** cliente y servidor en la misma maquina, que nuevamente se crea un directorio en /Documentos con el nombre de **ServicioUDP**, en el cual tendra dos archivos un **Server.py** y **cliente.py**
+
+**Server.py**
+```
+import socket
+import sys
+
+# Create a UDP socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+# Bind the socket to the port
+server_address = ('localhost', 10000)
+print('starting up on {} port {}'.format(*server_address))
+sock.bind(server_address)
+
+while True:
+    print('\nwaiting to receive message')
+    data, address = sock.recvfrom(4096)
+
+    print('received {} bytes from {}'.format(
+        len(data), address))
+    print(data)
+
+    if data:
+        sent = sock.sendto(data, address)
+        print('sent {} bytes back to {}'.format(
+            sent, address))
+```
+
+**cliente.py**
+
+```
+import socket
+import sys
+
+# Create a UDP socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+server_address = ('localhost', 10000)
+message = b'This is the message.  It will be repeated.'
+
+try:
+
+    # Send data
+    print('sending {!r}'.format(message))
+    sent = sock.sendto(message, server_address)
+
+    # Receive response
+    print('waiting to receive')
+    data, server = sock.recvfrom(4096)
+    print('received {!r}'.format(data))
+
+finally:
+    print('closing socket')
+    sock.close()
+```
+
+Y se ejecutan los archivos con los siguientes comandos:
+```
+python3 server.py
+python3 client.py
+```
+![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/conexionUDP.png?raw=true)
+
+Que para ver que puerto se utilizo se hace uso del comando ```lsof -i -P -n```, que se observa que se ha utilizado el puerto **10000** para la conexion servidor-cliente.
+
+![puerto 1000](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/datosUDP.png)
