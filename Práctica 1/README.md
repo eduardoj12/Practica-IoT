@@ -46,3 +46,96 @@ sudo apt-get install gedit
 ```
 ![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/instalaci%C3%B3n%20gedit.png?raw=true)
 
+Ademas la configuración de red de la maquina debe estar en adaptador puente.
+
+Seguido a esto se **identifica la configuración de la red** con el siguiente comando:
+
+```
+ifconfig
+```
+![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/ifconfig.png?raw=true)
+
+Continuando con la practica, se necesita identificar que puertos y servicios estan ocupados, que se consigue con los siguientes codigos:
+
+```
+ss | grep containerd
+netstat | grep containerd
+lsof | grep containerd
+```
+![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/Puertos%20y%20servicios%20ocupados.png?raw=true)
+
+Se realiza una **conexion TCP** en la cual el cliente y el servidor estan en la misma maquina. 
+El primer paso es crear un archivo **server.py** que se guarda en el directorio **/Documentos/ServiciosTCP**, que se realizan con los siguientes codigos:
+```
+cd Documentos/
+mkdir serviciosTCP
+cd serviciosTCP/ls
+touch server.py
+```
+En lo que el archico creado debe llevar el siguiente codigo:
+```
+import socket
+import sys
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+server_address = ('0.0.0.0', 10000)
+print("Iniciando servidor...")
+sock.bind(server_address)
+
+sock.listen(1)
+
+while True:
+    print("Esperando por una conexion")
+    connection, client_address = sock.accept()
+    try:
+        print("Conectando desde: ", client_address)
+        while True:
+            data = connection.recv(16)
+            print('Recibido {!r}'.format(data))
+            if data:
+                print("Enviando datos de regreso")
+                connection.sendall(data)
+            else:
+                print("No hay datos desde el cliente", client_address)
+                break
+    finally:
+        connection.close()
+```
+Seguido a esto, en el mismo directorio se crea un nuevo archivo denominado **Cliente.py** con el siguiente codigo:
+```
+import socket
+import sys
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+server_address = ('0.0.0.0', 10000)
+print("Iniciando cliente...")
+sock.connect(server_address)
+
+try:
+    message = b'Este es un mensaje'
+    print("Enviando {!r}".format(message))
+    sock.sendall(message)
+    
+    amount_rcv = 0
+    amount_exp = len(message)
+    
+    while amount_rcv < amount_exp:
+        data = sock.recv(16)
+        amount_rcv += len(data)
+        print("Recibiendo {!r}".format(data))
+finally:
+   print("Cerrando socket")
+   sock.close()
+```
+Y se ejecutan los archivos con los siguientes comandos:
+```
+python3 server.py
+python3 client.py
+```
+![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/conexionTCP.png?raw=true)
+
+Que para ver que puerto se utilizo se hace uso del comando ```lsof -i -P -n```, que se observa que se ha utilizado el puerto **10000** para la conexion servidor-cliente.
+
+![puerto 1000](https://user-images.githubusercontent.com/118281449/203447510-aedfab3f-fe5d-4045-91c8-70ef6d39e273.png)
