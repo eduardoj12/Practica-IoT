@@ -76,8 +76,3 @@ y asi mismo con la direccion ip:
 http://192.168.1.61:3000
 ```
 ![hello ip](https://user-images.githubusercontent.com/118281449/203455863-2fccbb0b-37b9-4344-b157-658bb433dca9.png)
-
-
-
-
-
