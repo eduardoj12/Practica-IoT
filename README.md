@@ -20,11 +20,13 @@ Para probar que quedo correctamenet se hacen dos procedimientos sencillos; el pr
 ```
 docker --version
 ```
-![Ver imagen: versión Docker](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/version%20docker.png?raw=true)
+![version docker](https://user-images.githubusercontent.com/118281449/204339245-ac670df3-d07f-457e-97b0-a29c64c54e2d.png)
+
 ```
 sudo docker run hello-world
 ```
-![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/docker%20hello-word.png?raw=true)
+![docker hello-word](https://user-images.githubusercontent.com/118281449/204339417-33e7dfed-5328-4b91-8efb-a3f20c884510.png)
+
 
 
 ## Desarrollo Practica
@@ -34,17 +36,20 @@ Para esta practica se necesita instalar la herramienta de red, las herramientas 
 ```
 sudo apt install net-tools
 ```
-![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/instalacion%20net-tools.png?raw=true)
+![instalacion net-tools](https://user-images.githubusercontent.com/118281449/204339497-9c0b2d08-13d8-4921-9530-99d077936632.png)
+
 
 ```
 sudo apt-get install lsof
 ```
-![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/instalaci%C3%B3n%20Isof.png?raw=true)
+![instalación Isof](https://user-images.githubusercontent.com/118281449/204339595-085e0732-4f5d-4872-9416-05b0b0b6f0c1.png)
+
 
 ```
 sudo apt-get install gedit
 ```
-![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/instalaci%C3%B3n%20gedit.png?raw=true)
+![instalación gedit](https://user-images.githubusercontent.com/118281449/204339666-05e81ff5-4580-4555-8914-b7e4616c8d15.png)
+
 
 Ademas la configuración de red de la maquina debe estar en adaptador puente.
 
@@ -53,7 +58,9 @@ Seguido a esto se **identifica la configuración de la red** con el siguiente co
 ```
 ifconfig
 ```
-![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/ifconfig.png?raw=true)
+
+![ifconfig](https://user-images.githubusercontent.com/118281449/204339739-56d75b27-8ae2-4cfd-895e-155eba3a9cc7.png)
+
 
 Continuando con la practica, se necesita identificar que puertos y servicios estan ocupados, que se consigue con los siguientes codigos:
 
@@ -62,7 +69,8 @@ ss | grep containerd
 netstat | grep containerd
 lsof | grep containerd
 ```
-![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/Puertos%20y%20servicios%20ocupados.png?raw=true)
+![Puertos y servicios ocupados](https://user-images.githubusercontent.com/118281449/204339855-ec6db086-d4f6-4dc9-a668-cde57637211b.png)
+
 
 Se realiza una **conexion TCP** en la cual el cliente y el servidor estan en la misma maquina. 
 El primer paso es crear un archivo **server.py** que se guarda en el directorio **/Documentos/ServiciosTCP**, que se realizan con los siguientes codigos:
@@ -127,7 +135,8 @@ Y se ejecutan los archivos con los siguientes comandos:
 python3 server.py
 python3 client.py
 ```
-![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/conexionTCP.png?raw=true)
+![conexionTCP](https://user-images.githubusercontent.com/118281449/204340525-3f016012-80b6-4944-a6ce-c62fceaa022f.png)
+
 
 Que para ver que puerto se utilizo se hace uso del comando ```lsof -i -P -n```, que se observa que se ha utilizado el puerto **10000** para la conexion servidor-cliente.
 
@@ -184,11 +193,13 @@ Y se ejecutan los archivos con los siguientes comandos:
 python3 server.py
 python3 client.py
 ```
-![Ver imagen: Hello World](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/conexionUDP.png?raw=true)
+![conexionUDP](https://user-images.githubusercontent.com/118281449/204340886-5529bb52-eafa-4cc2-bf76-355ac96b0a0e.png)
+
 
 Que para ver que puerto se utilizo se hace uso del comando ```lsof -i -P -n```, que se observa que se ha utilizado el puerto **10000** para la conexion servidor-cliente.
 
-![puerto 1000](https://github.com/eduardoj12/Practica-IoT/blob/main/Pr%C3%A1ctica%201/Imagenes/datosUDP.png)
+![datosUDP](https://user-images.githubusercontent.com/118281449/204341121-e1e2ccfb-e68e-419e-a17f-5866c29deb3f.png)
+
 
 
 
