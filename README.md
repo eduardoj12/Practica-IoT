@@ -368,3 +368,97 @@ curl -X POST http://localhost:3000/Pikachu
 ```
 ![holaPicachu](https://user-images.githubusercontent.com/118281449/204401962-9d755550-92e2-4d70-af37-328bfc9f89ae.png)
 
+Se sube los cambios realizados, para lo cual se ejecutan los siguientes comandos:
+```
+cd ~Documents/Servidores/practica_02
+git add .
+git commit -m "Se agrego un metodo POST"
+git push origin master
+```
+## Seleccionar un tema para moldear como una entidad.
+El tema que se selecciono fueron ciudades, con los parametros nombre, pais y CodPostal.Ademas se implementaron los metodos GET,POST, y DELETE.
+Por lo tanto el codigo de **app.controller.ts** sera el siguiente:
+```
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common';
+import { AppService } from './app.service';
+
+interface Ciudad {
+  nombre: string,
+  pais: string,
+  CodPostal: number
+}
+
+@Controller()
+export class AppController {
+  constructor(private readonly appService: AppService) { }
+
+  private ciudades: Ciudad[] = [{
+    nombre: "Popayan",
+    pais: "Colombia",
+    CodPostal: 1004
+  }]
+
+  @Get()
+  getHello(): Ciudad[] {
+    return this.ciudades;
+  }
+
+  @Post()
+  crear(@Body() datos: Ciudad): Ciudad {
+    this.ciudades.push(datos);
+    return datos;
+  }
+
+  @Put(":id")
+  modificar(@Body() datos: Ciudad, @Param('id') id: number): Ciudad | string {
+    try{
+    this.ciudades[id] = datos
+    return this.ciudades[id];
+    }
+    catch{
+      return `No fue posible modificar al usuario en la posición ${id}`
+    }
+  }
+
+  @Delete(":id")
+  eliminar(@Param('id') id: number){
+    try{
+      this.ciudades = this.ciudades.filter((val, index) => index != id);
+      return true;
+    }
+    catch{
+      return false;
+    }
+  }
+
+  @Patch(":id/CodPostal/:CodPostal")
+  cambiarEdad(@Param('id') id: number, @Param('CodPostal') Cod: number): Ciudad | string{
+    try{
+      this.ciudades[id].CodPostal = Cod;
+      return this.ciudades[id];
+    }
+    catch{
+      return `No fue posible modificar al usuario en la posición ${id}`
+    }
+  }
+}
+```
+Que con ayuda de la herramienta **Postman** se prueba el funcionamiento de los metodos:
+**Metodo GET**
+
+![Get](https://user-images.githubusercontent.com/118281449/204405303-8056689e-30e6-426f-a4a2-b91bdd27e39f.png)
+
+**Metodo POST**
+![Post](https://user-images.githubusercontent.com/118281449/204405299-5d20c07c-438a-4d21-aa76-81e0d02799b0.png)
+**Metodo DELETE**
+![Delete](https://user-images.githubusercontent.com/118281449/204405306-b05f407b-9d24-46a0-8a1b-1c6c76a03a94.png)
+
+Finalmete se sube lo realizado en GitHub con un nuevo commit:
+```
+cd ~Documents/Servidores/practica_02
+git add .
+git commit -m "Se completó la tarea"
+git push origin master
+```
+
+
