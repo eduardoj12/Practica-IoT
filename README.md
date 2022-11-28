@@ -286,3 +286,85 @@ y asi mismo con la direccion ip:
 http://192.168.1.61:3000
 ```
 ![hello ip](https://user-images.githubusercontent.com/118281449/203455863-2fccbb0b-37b9-4344-b157-658bb433dca9.png)
+
+## 3. Publicar el codigo en Github
+Primero que todo se debe tener una cuenta en GitHub y crear un repositorio publico, que se configura en llave SSH o http, pero para este caso se hizo con SSH, con el fin de poder ir guardando todo. Para esto se ingresa en la carpeta que se esta trabajando con el comando:
+```
+cd Documents/Servidores/server
+```
+
+Se inicia el repositorio en GitHub mediante el siguiente comando, donde se conecta medienate la url de SSH de nuestro repositorio.
+```
+git remote add origin  git@github.com:eduardoj12/Practica-IoT.git
+```
+Se inicializa la carpeta de nuestro proyecto con el siguiente comando:
+
+```
+git init
+```
+y se obtiene una captura del proyecto con el comando:
+```
+git commit -m "Primer commit"
+```
+Ee carga el contennido de nuestro proyecto al repositorio Github con el comando:
+```
+git push --set-upstream origin master
+```
+
+## 4. Verbos HTTP
+Para continuar con la practica  se debe acceder a VSCode, para una mayor facilidad de esta,  y se debe tener en cuenta los siguientes pasos.
+Primero se accede a la carpeta de nuestro proyecto mediante el boton **Open Folder**.
+![carpeta VC](https://user-images.githubusercontent.com/118281449/204397437-549693c7-2380-469a-9a13-5884a4ca89ca.png)
+
+Dentro de la carpeta de nuestro proyecto se encuentra un archivo llamado app.controller.ts, el cual ejecuta una peticion GET al servidor y tiene el siguiente contenido.
+
+![app controler](https://user-images.githubusercontent.com/118281449/204397503-7e344ffd-6c1f-46b4-bbce-b974709f9a94.png)
+
+Donde se modifica el metodo con el siguiente codigo para asi poder observar los cambios en el servidor:
+
+```
+@Get()
+getHello(): string {
+  return "Hola Eduardo";
+}
+```
+Se guardan los cambios y se ejecuta el servidor mediante el siguiente comando:
+```
+npm run start:dev
+```
+Para verificar los cambios realisados ejecutar en el terminal 
+```
+curl http://localhost:3000
+```
+![holaEduardo](https://user-images.githubusercontent.com/118281449/204401570-33a7105b-88d7-475d-954c-d72da5b21b5a.png)
+
+Seguido a esto para agregar un metodo POST se crea una variable para asi guardar un mensaje adicional y ser retomada por el metodo GET. Luego se agrega un metodo POST el cual tiene el parametro nombre como entrada, Por lo tanto app.controller.ts queda de la siguiente manera.
+```
+import { Controller, Get, Param, Post } from '@nestjs/common';
+import { AppService } from './app.service';
+
+@Controller()
+export class AppController {
+   constructor(private readonly appService: AppService) {}
+
+   private persona = "Edier...";
+
+   @Get()
+   getHello(): string {
+      return `Hola: ${this.persona}`
+   }
+
+   @Post(':nombre')
+   modificar(@Param('nombre') nombre: string): string {
+      this.persona = nombre;
+      return `Mensaje modificado: ${this.persona}`
+   }
+}
+```
+Para ejecutar el metodo POST en la terminal de la maquina virtual se usa.
+
+```
+curl -X POST http://localhost:3000/Pikachu
+```
+![holaPicachu](https://user-images.githubusercontent.com/118281449/204401962-9d755550-92e2-4d70-af37-328bfc9f89ae.png)
+
