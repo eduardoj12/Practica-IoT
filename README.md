@@ -464,4 +464,201 @@ git commit -m "Se completó la tarea"
 git push origin master
 ```
 
+## Práctica 3: Seguridad y calidad
 
+Primero que todo se crea un nueva arquitectura que es una rama hexagonal, en la que se va trabajar esta practica con el siguiente codigo:
+```
+git checkout -b hexagonal master
+```
+Para tener la estructura hexagonal se deben hacer los siguientes cambios en la estructura del codigo, donde nombre_entidad es **Ciudades**.
+
+- src
+  - <nombre_entidad>
+    - adapters
+      - controllers
+        - <nombre_entidad>.controller.ts
+      - repositories
+        - <nombre_entidad>.repository.ts (nuevo archivo)
+    - domain
+      - models
+        - <nombre_entidad>.model.ts (nuevo archivo)
+      - services
+        - <nombre_entidad>.service.ts
+
+Seguido a esto se mueve los archivos app.controllers a la carpeta controllers y el archivo app.service.ts a la carpeta service y se cambian los nombre a la entidad y a las clases.
+
+![CarpetaSrc](https://user-images.githubusercontent.com/118281449/204413175-8c956b2b-cf0c-400c-bfb5-aa21239078e2.png)
+
+Para modelar los datos se crea un archivo de modelo. De esta manera se podrán agregar nuevos roles con sus especificaciones.
+Se crean dos archivos, el primero es el que modela futuros roles y es el siguiente:
+**Ciudades.model.ts**
+```
+export abstract class Ciudade {
+  name: string;
+  Pais: string;
+  CodPostal: number;
+}
+```
+Y el segundo archivo ciudade2.model.ts que extiende la funcionalidad del modelo tiene el siguiente contenido:
+**Ciudades2.model.ts**
+```
+import { ciudades } from "./Ciudades.model";
+
+
+export class Ciudade2 extends ciudades{
+    returndate: Date;
+}
+```
+Seguido a esto se crea un nuevo archivo denominado ciudades.service.ts dentro de la carpeta service con el objetivo de migrar las funcionalidades que antes el controlasdor tenia. El contenido de este archivo queda.
+
+```
+
+import { Injectable } from '@nestjs/common';
+// Importamos el modelo de jugador
+import { ciudades } from '../models/Ciudades.model';
+
+@Injectable()
+export class CiudadesService {
+
+   // Como no hay base de datos aun empleamos una variable en memoria:
+   private ciudad: ciudades[] = [{
+      name: 'Cali',
+      Pais: 'Colombia',
+      CodPostal: 35,
+   }]
+
+   /**
+    * Método para obtener todos los jugadores
+    */
+   public listar() : ciudades[] {
+      return this.ciudad
+   }
+
+   /**
+    * Método para crear un jugador
+    */
+   public crear(lugar: ciudades): ciudades {
+      this.ciudad.push(lugar);
+      return lugar;
+   }
+
+   /**
+    * Método para modificar un jugador
+    */
+   public modificar(id: number, lugar: ciudades): ciudades {
+         this.ciudad[id] = lugar
+         return this.ciudad[id];
+   }
+
+   /**
+    * Método para eliminar un jugador
+    * Debido a que usamos un filtro, para validar si se elimina el jugador, 
+    * primero se determina cuantos elementos hay en el arreglo y luego se hace una comparación.
+    */
+   public eliminar(id: number): boolean {
+      const totalJugadoresAntes = this.ciudad.length;
+      this.ciudad = this.ciudad.filter((val, index) => index != id);
+      if(totalJugadoresAntes == this.ciudad.length){
+         return false;
+      }
+      else{
+         return true;
+      }
+   }
+
+   /**
+    * Método para modificar la edad de un jugador
+    */
+   public cambiarCodPostal(id: number, Cod: number): ciudades {
+      this.ciudad[id].CodPostal = Cod;
+      return this.ciudad[id];
+   }
+
+}
+```
+Dentro de la carpeta controlador en el archivo Ciudades.controller.ts se hace la implementacion sel servicio. Dentro de este es importante corregir errores para lo cual se agregan bloques try/catch. El controlador queda asi.
+```
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common';
+import { CiudadesService } from '../../domain/services/Ciudades.service';
+
+import {Ciudade2} from '../../domain/models/Ciudades2.model';
+
+const errReturn = (e: Error, message: string) => {
+   return {
+      message: message,
+      error: e
+   }
+}
+
+@Controller()
+export class CiudadesController {
+constructor(private readonly ciudadService: CiudadesService) { }
+
+   @Get()
+   getHello() {
+      try{
+         return this.ciudadService.listar();
+      }
+      catch(e){
+         return errReturn(e, "Error al listar ciudades");
+      }
+   }
+
+   @Post()
+   crear(@Body() datos: Ciudade2) {
+      try{
+         return this.ciudadService.crear(datos);
+      }
+      catch(e){
+         return errReturn(e, "Error al crear ciudad");
+      }
+   }
+
+   @Put(":id")
+   modificar(@Body() datos: Ciudade2, @Param('id') id: number) {
+      try{
+         return this.ciudadService.modificar(id, datos);
+      }
+      catch(e){
+         return errReturn(e, "Error al modificar ciudad");
+      }
+   }
+
+   @Delete(":id")
+   eliminar(@Param('id') id: number) {
+      try{
+         return this.ciudadService.eliminar(id);
+      }
+      catch(e){
+         return errReturn(e, "Error al eliminar ciudad");
+      }
+   }
+
+   @Patch(":id/CodPostal/:CodPostal")
+   cambiarCodPostal(@Param('id') id: number, @Param('CodPostal') CodPos: number) {
+      try{
+         return this.ciudadService.cambiarCodPostal(id, CodPos);
+      }
+      catch(e){
+         return errReturn(e, "Error al modificar edad del jugador");
+      }
+   }
+}
+```
+Es recomendable aplicar los principios SOLID para asegurar la mantebilidad y la economía de código a futuro.
+
+Los principios SOLID son:
+
+- Single Responsability Principle (Principio de Responsabilidad Única): Una clase debe tener una única responsabilidad y debe estar abierta a extensión pero cerrada a modificación.
+
+- Open-Closed Principle (Principio de Abierto-Cerrado): Las entidades de software (clases, módulos, funciones, etc.) deben estar abiertas a la extensión pero cerradas a la modificación.
+
+- Liskov Substitution Principle (Principio de Sustitución de Liskov): Las entidades de software (clases, módulos, funciones, etc.) deben ser sustituibles por instancias de sus subtipos sin alterar la correctitud del programa.
+
+- Interface Segregation Principle (Principio de Segregación de Interfaces): Las interfaces de software (clases, módulos, funciones, etc.) deben ser lo más pequeñas posibles.
+
+- Dependency Inversion Principle (Principio de Inversión de Dependencias): Las entidades de software (clases, módulos, funciones, etc.) deben depender de abstracciones y no de implementaciones.
+
+
+
+## Implementado seguridad
