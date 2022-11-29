@@ -662,3 +662,230 @@ Los principios SOLID son:
 
 
 ## Implementado seguridad
+
+Para implementar un sistema de autentificacion y autorizacion se realizan los siguientes pasos:
+Primero se instalan los paquetes necesarios que permiten aplicar la seguridad a un sistema y se hace con los siguientes comandos:
+```
+npm install --save @nestjs/passport passport passport-local
+npm install --save-dev @types/passport-local
+```
+![instalacion3](https://user-images.githubusercontent.com/118281449/204422793-743cd735-3eb6-42a8-a6c1-5ae91adabc5a.png)
+
+Segundo NestJS permite la autenticación, por lo cual dentro de la carpeta del proyecto se crea un modulo de autenticacion usando los siguientes comandos.
+```
+nest g module auth
+nest g service auth
+```
+![autentificacion](https://user-images.githubusercontent.com/118281449/204423073-cd511aaa-e80a-49f2-a9c1-d0884a1e7dc5.png)
+
+Se observara una nueva carpeta llamada auth dentro de src y contendra los archivos auth.module.ts, auth.service.ts y auth.service.spec.ts. Este ultimo contiene las pruebas unitarias del servicio, el cual no se utilizara.
+
+![auth](https://user-images.githubusercontent.com/118281449/204424328-33f6773d-9f4a-4392-9f0a-5eadc5b2ae76.png)
+
+Asi mismo se creará un módulo para gestionar usuarios, con los comandos:
+```
+nest g module users
+nest g service users
+```
+![modges](https://user-images.githubusercontent.com/118281449/204425089-1dbb6f0e-2224-4ea8-9ebd-aa0776e421e5.png)
+
+Seguido a esto se implementa el servicio de usuarios.
+```
+
+import { Injectable } from '@nestjs/common';
+
+export type User = {
+   userId: number,
+   username: string,
+   password: string
+};
+
+@Injectable()
+export class UsersService {
+   private readonly users: User[] = [
+      {
+         userId: 1,
+         username: 'eduardo',
+         password: 'muce',
+      },
+      {
+         userId: 2,
+         username: 'jose',
+         password: 'muce',
+      },
+   ];
+
+   /**
+      * Recupera los datos del usuario
+      * @param username Nombre de usuario
+      * @returns 
+      */
+   async findOne(username: string): Promise<User | undefined> {
+      return this.users.find(user => user.username === username);
+   }
+}
+```
+
+Para que el servicio de usuarios este disponible en otros servicios es necesario configuran los modulos, en este caso se modifica el archivo users.module.ts de la siguiente manera:
+```
+import { Module } from '@nestjs/common';
+import { UsersService } from './users.service';
+
+@Module({
+  providers: [UsersService],
+  exports: [UsersService],
+})
+export class UsersModule {}
+```
+En la carpera usrs se encuentra ptro archivo denominado users.service.spec.ts, el cual contiene las pruebas unitarias del servicio, el cual no se utilizara.
+
+Para implementar un servicio de autenticacion es decir que valide que el usuario y contraseña sean correctos, se modifica el archivo ```auth.service.ts``` de la siguiente manera:
+```
+import { Injectable } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
+
+@Injectable()
+export class AuthService {
+constructor(private usersService: UsersService) {}
+
+   async validateUser(username: string, pass: string): Promise<any> {
+      const user = await this.usersService.findOne(username);
+      if (user && user.password === pass) {
+         const { password, ...result } = user;
+         return result;
+      }
+      return null;
+   }
+}
+```
+
+Para la gestion de usuarios se modifica el archivo ```auth.module.ts``` de la siguiente manera:
+```
+import { Module } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { UsersModule } from '../users/users.module';
+
+@Module({
+   imports: [UsersModule], // Importa el módulo de usuarios
+   providers: [AuthService]
+})
+export class AuthModule {}
+
+```
+Para validar a los usuarios se necesita crear un nuevo archivo denominado ```local.strategy.ts``` que se encuentra en la carpeta **auth** con en siguiente contenido.
+
+```
+import { Strategy } from 'passport-local';
+import { PassportStrategy } from '@nestjs/passport';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { AuthService } from './auth.service';
+
+@Injectable()
+export class LocalStrategy extends PassportStrategy(Strategy) {
+   constructor(private authService: AuthService) {
+      super();
+   }
+
+   async validate(username: string, password: string): Promise<any> {
+      const user = await this.authService.validateUser(username, password);
+      if (!user) {
+         throw new UnauthorizedException();
+      }
+      return user;
+   }
+}
+```
+
+Ahora se debe configurar el módulo de autenticación para que utilice la estrategia de autenticación, para eso se modifica el archivo auth.module.ts
+```
+import { Module } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { UsersModule } from '../users/users.module';
+import { PassportModule } from '@nestjs/passport';
+import { LocalStrategy } from './local.strategy';
+
+@Module({
+   imports: [UsersModule, PassportModule],
+   providers: [AuthService, LocalStrategy]
+})
+export class AuthModule {}
+```
+Finalmente realizado los anteriores pasos se necesita aplicar estos cambios al controlador, por lo tanto el controlador queda de la siguiente forma.
+```
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
+import { CiudadesService } from '../../domain/services/Ciudades.service';
+
+import { Ciudade2 } from '../../domain/models/Ciudades2.model';
+import { CiudadesController } from './Ciudades.controller';
+
+import { AuthGuard } from '@nestjs/passport';
+
+const errReturn = (e: Error, message: string) => {
+  return {
+    message: message,
+    error: e
+  }
+}
+
+@Controller()
+export class CiudadesControllerImpl implements CiudadesController {
+ 
+  constructor(@Inject('TicketFullService') private readonly ciuService: CiudadesService) { }
+
+  @UseGuards(AuthGuard)
+  @Get()
+  listCiudades() {
+    try{
+      return this.ciuService.listar();
+    }
+    catch(e){
+      return errReturn(e, "Error al listar ciudades");
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Post()
+  create(@Body() datos: Ciudade2) {
+    try{
+      return this.ciuService.crear(datos);
+    }
+    catch(e){
+      return errReturn(e, "Error al crear ciudad");
+    }
+  }
+  @UseGuards(AuthGuard)
+  @Put(":id")
+  update(@Body() datos: Ciudade2, @Param('id') id: number) {
+    try{
+      return this.ciuService.modificar(id, datos);
+    }
+    catch(e){
+      return errReturn(e, "Error al modificar ciudad");
+    }
+  }
+  @UseGuards(AuthGuard)
+  @Delete(":id")
+  delete(@Param('id') id: number) {
+    try{
+      return this.ciuService.eliminar(id);
+    }
+    catch(e){
+      return errReturn(e, "Error al eliminar la ciudad");
+    }
+  }
+  @UseGuards(AuthGuard)
+  @Patch(":id/CodPostal/:CodPostal")
+  cambiarCod(@Param('id') id: number, @Param('CodPostal') Cod: number) {
+    try{
+      return this.ciuService.cambiarCodPostal(id, Cod);
+    }
+    catch(e){
+      return errReturn(e, "Error al modificar el codigo postal");
+    }
+  }
+}
+```
+Y se reliaza su respectiva prueba:
+
+
+
