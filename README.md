@@ -375,7 +375,7 @@ git add .
 git commit -m "Se agrego un metodo POST"
 git push origin master
 ```
-## Seleccionar un tema para moldear como una entidad.
+## 5. Seleccionar un tema para moldear como una entidad.
 El tema que se selecciono fueron ciudades, con los parametros nombre, pais y CodPostal.Ademas se implementaron los metodos GET,POST, y DELETE.
 Por lo tanto el codigo de **app.controller.ts** sera el siguiente:
 ```
@@ -448,8 +448,11 @@ Que con ayuda de la herramienta **Postman** se prueba el funcionamiento de los m
 
 ![Get](https://user-images.githubusercontent.com/118281449/204405303-8056689e-30e6-426f-a4a2-b91bdd27e39f.png)
 
+
 **Metodo POST**
 ![Post](https://user-images.githubusercontent.com/118281449/204405299-5d20c07c-438a-4d21-aa76-81e0d02799b0.png)
+
+
 **Metodo DELETE**
 ![Delete](https://user-images.githubusercontent.com/118281449/204405306-b05f407b-9d24-46a0-8a1b-1c6c76a03a94.png)
 
