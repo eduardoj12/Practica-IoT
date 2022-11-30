@@ -888,4 +888,159 @@ export class CiudadesControllerImpl implements CiudadesController {
 Y se reliaza su respectiva prueba:
 
 
+## Autenticación con JWT
+
+Para esto primero se instala el paquete @nestjs/jwt con los siguientes comandos:
+```
+npm install --save @nestjs/jwt passport-jwt
+npm install --save-dev @types/passport-jwt
+```
+
+![Instalacion @nets](https://user-images.githubusercontent.com/118281449/204701705-ee3a87b5-4430-4369-a773-98af9ca44a65.png)
+
+
+Se agrega el metodo login y algunas dependencias al archivo **auth.service.ts** por lo cual queda:
+```
+import { Injectable } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
+import { JwtService } from '@nestjs/jwt';
+
+@Injectable()
+export class AuthService {
+   constructor(
+      private usersService: UsersService,
+      private jwtService: JwtService
+   ) {}
+
+   async validateUser(username: string, pass: string): Promise<any> {
+      const user = await this.usersService.findOne(username);
+      if (user && user.password === pass) {
+         const { password, ...result } = user;
+         return result;
+      }
+      return null;
+   }
+ ```
+ 
+Se implementa un endpoint para convertir las credenciales del usuario en un token JWT y de esta manera permirir el inicio de secion por parte de los usuarios. Para esto se crea un nuevo archivo denominado **auth.controller.ts** con el siguiente contenido.
+```
+import { Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from './auth.service';
+
+@Controller('auth')
+export class AuthController {
+   constructor(private authService: AuthService) {}
+
+   @UseGuards(AuthGuard('local'))
+   @Post('login')
+   async login(@Request() req) {
+      return this.authService.login(req.user);
+   }
+}
+```
+
+Para guardar la contraseña JWT se crea un archivo denominado **constants.ts** que tendar la siguiente constante.
+
+```
+export const jwtSecret = 'secretKey';
+```
+Posteriormente se adiciona una estrategia para permitirle Passport identificar donde se encontrará el token en una petición y cual es el secreto que permite validarlo. Se crea el archivo **jwt-auth.strategy.ts**:
+```
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { PassportStrategy } from '@nestjs/passport';
+import { Injectable } from '@nestjs/common';
+import { jwtSecret } from './constants';
+
+@Injectable()
+export class JwtStrategy extends PassportStrategy(Strategy) {
+   constructor() {
+      super({
+         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+         ignoreExpiration: false,
+         secretOrKey: jwtSecret,
+      });
+   }
+
+   async validate(payload: any) {
+      return { userId: payload.sub, username: payload.username };
+   }
+}
+```
+Ahora se modifica auth.module.ts para configurar correctamente el servicio de JWT:
+```
+import { Module } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { LocalStrategy } from './local.strategy';
+import { UsersModule } from '../users/users.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthController } from './auth.controller';
+
+@Module({
+   controllers: [AuthController],
+   imports: [
+      UsersModule,
+      PassportModule,
+      JwtModule.register({
+         secret: "este es el secreto para generar JWT",
+         signOptions: { expiresIn: '60m' },
+      }),
+   ],
+   providers: [AuthService, LocalStrategy],
+   exports: [AuthService],
+   })
+export class AuthModule {}
+```
+Ahora es necesario implementar un guardia para que intercepte un token JWT y lo valide para proteger a los enpoints que sean de nuestro interés. Creamos en la carpeta auth un archivo llamado jwt-auth.guard.ts.
+```
+import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+
+@Injectable()
+export class JwtAuthGuard extends AuthGuard('jwt') {}
+```
+
+Se registran los nuevos componentes en el módulo auth.module.ts:
+```
+import { Module } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { LocalStrategy } from './local.strategy';
+import { UsersModule } from '../users/users.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthController } from './auth.controller';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtStrategy } from './jwt.strategy';
+import { jwtSecret } from './constants';
+
+@Module({
+   controllers: [AuthController],
+   imports: [
+      UsersModule,
+      PassportModule,
+      JwtModule.register({
+         secret: jwtSecret,
+         signOptions: { expiresIn: '60m' },
+      }),
+   ],
+   providers: [AuthService, LocalStrategy, JwtStrategy, JwtAuthGuard],
+   exports: [AuthService],
+   })
+export class AuthModule {}
+```
+Si todo es correcto, será posible llamar al endpoint que genera un token JWT, esto se podrá validar con CURL con el siguiente comando:
+
+```
+curl -X POST http://localhost:3000/auth/login -d '{"username": "edier", "password": "bravo" }' -H "Content-Type: application/json"
+```
+
+La terminal responderá con un token. Guarde este token para usarlo en los siguientes pasos.
+
+Se protegen los endpoints que sea necesario, para lo cual el controlador queda de la siguiente manera.
+```
+```
+Se realizan pruebas en la herramienta Postman
+
+
 
