@@ -891,6 +891,10 @@ export class CiudadesControllerImpl implements CiudadesController {
 ```
 Y se reliaza su respectiva prueba:
 
+![Get Prac3](https://user-images.githubusercontent.com/118281449/205732404-c8dbb2ff-b2eb-473e-b05b-c49b884b8c85.png)
+
+la solicitud GET como se puede observar tiene un error 401. Esto pasa por que se prohibe el servicio por falta de autenticacion de usuario.
+
 
 ## Autenticación con JWT
 
@@ -1036,15 +1040,95 @@ export class AuthModule {}
 Si todo es correcto, será posible llamar al endpoint que genera un token JWT, esto se podrá validar con CURL con el siguiente comando:
 
 ```
-curl -X POST http://localhost:3000/auth/login -d '{"username": "edier", "password": "bravo" }' -H "Content-Type: application/json"
+curl -X POST http://localhost:3000/auth/login -d '{"username": "eduardo", "password": "muce" }' -H "Content-Type: application/json"
 ```
+![token](https://user-images.githubusercontent.com/118281449/205735079-61030af8-f630-4a11-99f4-f989d1e8cae3.png)
 
 La terminal responderá con un token. Guarde este token para usarlo en los siguientes pasos.
 
 Se protegen los endpoints que sea necesario, para lo cual el controlador queda de la siguiente manera.
 ```
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
+import { CiudadesServiceImpl  } from '../../domain/services/Ciudades2.service';
+
+import { Ciudade2 } from '../../domain/models/Ciudades2.model';
+import { CiudadesController } from './Ciudades.controller';
+
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+
+const errReturn = (e: Error, message: string) => {
+  return {
+    message: message,
+    error: e
+  }
+}
+
+@Controller()
+export class CiudadesControllerImpl implements CiudadesController {
+  constructor(@Inject('CiudadesServiceImpl') private readonly CiudadService: CiudadesServiceImpl ) { }
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  listCiudades() {
+    try{
+      return this.CiudadService.list();
+    }
+    catch(e){
+      return errReturn(e, "Error al listar ciudades");
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  create(@Body() datos: Ciudade2) {
+    try{
+      return this.CiudadService.create(datos);
+    }
+    catch(e){
+      return errReturn(e, "Error al crear ciudad");
+    }
+  }
+  @UseGuards(JwtAuthGuard)
+  @Put(":id")
+  update(@Body() datos: Ciudade2, @Param('id') id: number) {
+    try{
+      return this.CiudadService.update(id, datos);
+    }
+    catch(e){
+      return errReturn(e, "Error al modificar la ciudad");
+    }
+  }
+  @UseGuards(JwtAuthGuard)
+  @Delete(":id")
+  delete(@Param('id') id: number) {
+    try{
+      return this.CiudadService.delete(id);
+    }
+    catch(e){
+      return errReturn(e, "Error al eliminar la Ciudad");
+    }
+  }
+  @UseGuards(JwtAuthGuard)
+  @Patch(":id/regreso/:regreso")
+  updateReturn(@Param('id') id: number, @Param('regreso') regreso: number) {
+    try{
+      return this.CiudadService.updateReturn(id, regreso);
+    }
+    catch(e){
+      return errReturn(e, "Error al modificar Codigo Postal");
+    }
+  }
+}
 ```
 Se realizan pruebas en la herramienta Postman
+En los endpoint protegidos con JWT es necesario usar un el token que anteriormente se solicito.
+
+Para configurar el token en Postman, se elige la opcion de Authorization, en esta se escoge la opcion Bearer Token y se copea el token en la casilla ubicada a la derecha.
+- **Metodo GET**
+![get prac3 final](https://user-images.githubusercontent.com/118281449/205736196-305e5910-56db-4e3d-9dce-02ca22a18a73.png)
+
+- **Metodo POST**
+![Post prac3](https://user-images.githubusercontent.com/118281449/205736230-7a0af492-ff7d-4711-bb7b-df32f2e4e8a0.png)
 
 
 
