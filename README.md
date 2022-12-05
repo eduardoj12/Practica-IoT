@@ -1,5 +1,6 @@
 # PRACTICA 1
 **Por** *Eduardo Muñoz*
+
 Esta practica esta documentada en esta seccion.
 
 ## 1. Configuracion del entorno
@@ -1216,3 +1217,30 @@ Nos dirigimos a la pagina de Deta donde anteriormente se habia iniciado sesion, 
 
 Al abrir la url aparecera lo siguiente. lo cual corresponde a lo que se obtiene al implementar un metodo GET.
 ![detaweb2](https://user-images.githubusercontent.com/118281449/205749748-6dd69f59-a868-4be5-852f-5b605342d7a1.png)
+
+## 2. Conectado a una base de datos.
+En este caso se empleara una base de datos no relacional orientada a documentos llamada MongoDB.
+
+Para crear nuestra base de datos seguir los siguientes pasos:
+
+- Crea una cuenta gratuita en MongoDB Atlas, para lo cual se ingresa en el siguiente link: 
+```
+https://www.mongodb.com/atlas/database
+```
+- Presione el botón Build a Cluster y seleccione la opción Free Tier, se recomienda elegir AWS como proveedor de infraestructura y presione el botón Create Cluster.
+
+- Una vez creado el cluster, es necesario crear un usuario, En los campos correspondientes ingrese un nombre de usuario y una contraseña y Presione el botón Add User.
+- Seguido a esto para facilitar la conexión la base de datos se recomienda ingresar una IP Address y en el campo asigne el valor 0.0.0.0, finalmente presione el botón Add Entry.
+- Finalmente se guarda y despliegua haciendo click en el botón Finish and close. En este punto ya tendrá una base de datos MongoDB lista para ser utilizada.
+
+Seguido a esto se instalan las dependencias de TypeORM y MongoDB con el siguiente comando:
+```
+npm install --save @nestjs/typeorm typeorm mongodb
+```
+En el panel de mongo atlas, en la sección Connect seleccione la opción Connect your application. Se Copia la url de conexión y reemplaza el valor de la variable MONGO_URL en el archivo ~/Documents/Servidores/server/src/app.module.ts por la url de conexión.
+
+Se modifica el archivo src/app.module.ts para que quede de la siguiente manera:
+```
+```
+
+
