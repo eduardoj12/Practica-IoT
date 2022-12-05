@@ -1,5 +1,6 @@
 # PRACTICA 1
 **Por** *Eduardo Muñoz*
+Esta practica esta documentada en esta seccion.
 
 ## 1. Configuracion del entorno
 Para esta practica se elige la distribucion Ubuntu, que seguido a esto se prodece a realizar la correspondiente instalacion y configuración de la maquina virtual mediante la herramienta virtualbox.
@@ -209,6 +210,7 @@ Que para ver que puerto se utilizo se hace uso del comando ```lsof -i -P -n```, 
 
 
 ## PRACTICA 2
+El codigo de esta practica esta la rama master y documentada en esta seccion.
 
 Para esta practica se tiene los requisitos bases del anterior proceso, ademas se necesitan instalar nuevas herramientas como NodeJS y NestJS.
 Estas se reliazan con los siguientes comandos:
