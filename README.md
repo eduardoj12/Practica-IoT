@@ -1130,5 +1130,89 @@ Para configurar el token en Postman, se elige la opcion de Authorization, en est
 - **Metodo POST**
 ![Post prac3](https://user-images.githubusercontent.com/118281449/205736230-7a0af492-ff7d-4711-bb7b-df32f2e4e8a0.png)
 
+## PRACTICA 4
+El codigo de esta practica esta la rama pract4 y documentada en esta seccion.
 
+Para el desarrollo de esta practica se utiliza el servicio de hosting gratuido Deta, que la prioridad seria descarga Deta con el siguiente comando:
+```
+curl -fsSL https://get.deta.dev/cli.sh | sh
+```
+![deta](https://user-images.githubusercontent.com/118281449/205738668-c3ac73df-589a-4d32-9d09-07b9a6e3d000.png)
 
+Agregando la variable de entorno:
+```
+  echo "export PATH=~/.deta/bin:$PATH" >> ~/.bashrc
+
+  source ~/.bashrc
+```
+Se inicia sesion en Deta ejecutando
+```
+ deta login
+```
+Se ejecutará su navegador por defecto y se le pedirá que inicie sesión en su cuenta de Deta. Si no tiene una cuenta, puede crear una en el siguiente link.
+```
+https://web.deta.sh/signup
+```
+Luego se crea un punto de entrada de la aplicación, para lo cual se crea un archivo **index.ts** dentro de la carpeta src de nuestro proyecto. El archivo debe contener el siguiente contenido.
+```
+import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import { AppModule } from './app.module';
+
+const createNestServer = async (expressInstance) => {
+const app = await NestFactory.create(
+   AppModule,
+   new ExpressAdapter(expressInstance),
+);
+
+return app.init();
+};
+
+export default createNestServer;
+```
+Igualmente en la raiz de nuestro proyecto crear un archivo **index.js** con el siguiente contenido.
+```
+const express = require('express');
+const createServer = require('./dist/index').default;
+
+const app = express();
+let nest;
+
+app.use(async (req, res) => {
+if (!nest) {
+   nest = express();
+   await createServer(nest);
+}
+return nest(req, res);
+});
+
+module.exports = app;
+```
+Se compila el proyecto mediante el siguiente comando. Este comando se debe ejecuitar en la carpeta raiz de nuestro proyecto.
+```
+nest build
+```
+Se publica la aplicacion para lo cual se ejecuta.
+```
+ deta new --node ./server/
+```
+![deta server](https://user-images.githubusercontent.com/118281449/205746818-35fd5c8d-baad-4cca-a26d-515862d4b18b.png)
+
+Para actualizar la aplicación ejecutamos en la terminal:
+```
+  deta update
+```
+Se desplega la aplicacion mediante el comando.
+```
+deta deploy server
+```
+Se activan los logs de la aplicación, para lo cual en la raiz de nuestro proyecto se ejecuta el comando.
+```
+deta visor enable
+```
+Nos dirigimos a la pagina de Deta donde anteriormente se habia iniciado sesion, ahi nos ubicamos en la seccion de micros donde se observara una opcion con el nombre de nuestro proyecto en la cual se encontrara la url del servicio desplegado.
+
+![detaWeb](https://user-images.githubusercontent.com/118281449/205748959-f09221b7-b3e3-4257-b357-eb467c2ee2d9.png)
+
+Al abrir la url aparecera lo siguiente. lo cual corresponde a lo que se obtiene al implementar un metodo GET.
+![detaweb2](https://user-images.githubusercontent.com/118281449/205749748-6dd69f59-a868-4be5-852f-5b605342d7a1.png)
