@@ -349,7 +349,7 @@ import { AppService } from './app.service';
 export class AppController {
    constructor(private readonly appService: AppService) {}
 
-   private persona = "Edier...";
+   private persona = "Eduardo...";
 
    @Get()
    getHello(): string {
@@ -467,6 +467,8 @@ git push origin master
 ```
 
 ## Práctica 3: Seguridad y calidad
+
+El codigo de esta practica esta la rama hexagonal y documentada en esta seccion.
 
 Primero que todo se crea un nueva arquitectura que es una rama hexagonal, en la que se va trabajar esta practica con el siguiente codigo:
 ```
