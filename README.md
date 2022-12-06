@@ -1241,6 +1241,69 @@ En el panel de mongo atlas, en la sección Connect seleccione la opción Connect
 
 Se modifica el archivo src/app.module.ts para que quede de la siguiente manera:
 ```
+import { Module } from '@nestjs/common';
+import { CiudadesControllerImpl  } from './Ciudades/adapters/controllers/Ciudades2.controller';
+import { CiudadesServiceImpl } from './Ciudades/domain/services/Ciudades2.service';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CiudadesEntity } from './Ciudades/domain/entities/ciudades.entity'
+
+
+@Module({
+  imports: [
+    AuthModule,
+    UsersModule,
+    TypeOrmModule.forRoot({
+      type: 'mongodb',
+      url: 'mongodb+srv://eduardoj:<password>@cluster0.kkrzcn8.mongodb.net/?retryWrites=true&w=majority',
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      synchronize: true, // Solo para desarrollo
+      logging: true,
+      autoLoadEntities: true,
+    }),
+    TypeOrmModule.forFeature([CiudadesEntity])
+  ],
+  controllers: [CiudadesControllerImpl],
+  providers: [
+    {
+      provide: 'CiudadesService',
+      useClass: CiudadesServiceImpl,
+    }
+  ],
+})
+export class AppModule {}
+
+```
+
+Se crea un nuevo archivo Ciudades.entity.ts en el directorio src/ciudades/domain/entities, donde ciudades es el nombre de nuestra entidad. El archivo queda.
+```
+import { Entity, Column, ObjectIdColumn } from 'typeorm';
+
+@Entity('tikectfull')
+export class CiudadesEntity {
+   @ObjectIdColumn()
+   id: string;
+
+   @Column()
+   name: string;
+
+   @Column()
+   pais: string;
+
+   @Column()
+   CodPostal: number;
+
+   @Column()
+   Departamento: string;
+
+}
+```
+Se agrega el constructor del servicio en el archivo CiudadesImpl.service.ts que se encuentra en la carpeta src/ciudades/domain/services
+
+```
+
 ```
 
 
