@@ -1256,7 +1256,7 @@ import { CiudadesEntity } from './Ciudades/domain/entities/ciudades.entity'
     UsersModule,
     TypeOrmModule.forRoot({
       type: 'mongodb',
-      url: 'mongodb+srv://eduardoj:<password>@cluster0.kkrzcn8.mongodb.net/?retryWrites=true&w=majority',
+      url: 'mongodb+srv://eduardoj:4muce2001@cluster0.kkrzcn8.mongodb.net/?retryWrites=true&w=majority',
       useNewUrlParser: true,
       useUnifiedTopology: true,
       synchronize: true, // Solo para desarrollo
@@ -1281,7 +1281,7 @@ Se crea un nuevo archivo Ciudades.entity.ts en el directorio src/ciudades/domain
 ```
 import { Entity, Column, ObjectIdColumn } from 'typeorm';
 
-@Entity('tikectfull')
+@Entity('Ciudad')
 export class CiudadesEntity {
    @ObjectIdColumn()
    id: string;
@@ -1293,17 +1293,63 @@ export class CiudadesEntity {
    pais: string;
 
    @Column()
-   CodPostal: number;
-
-   @Column()
-   Departamento: string;
-
+   Cod: number;
 }
 ```
 Se agrega el constructor del servicio en el archivo CiudadesImpl.service.ts que se encuentra en la carpeta src/ciudades/domain/services
 
 ```
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { InsertResult, MongoRepository, UpdateResult } from 'typeorm';
+import { CiudadesEntity } from '../entities/ciudades.entity';
+//import { Ciudade2 } from '../models/Ciudades2.model';
+import { CiudadesService } from './Ciudades.service';
+
+@Injectable()
+export class CiudadesServiceImpl implements CiudadesService {
+  constructor(
+    @InjectRepository(CiudadesEntity)
+    private repository: MongoRepository<CiudadesEntity>,
+  ) {}
+
+  public async list(): Promise<CiudadesEntity[]> {
+    return await this.repository.find();
+  }
+ 
+  public async create(ciudadesData: CiudadesEntity): Promise<InsertResult> {
+    const newCiudad = await this.repository.insert(ciudadesData);
+    return newCiudad;
+  }
+ 
+  public async update(
+    id: string,
+    ciudadesData: CiudadesEntity,
+  ): Promise<UpdateResult> {
+    const updatedCiudades = await this.repository.update(id, ciudadesData);
+    return updatedCiudades;
+  }
+ 
+  public async delete(id: string): Promise<boolean> {
+    const deleteResult = await this.repository.delete(id);
+    return deleteResult.affected > 0;
+  }
+ 
+  public async updateReturn(id: string, retorno: number): Promise<UpdateResult> {
+    const updatedCiudades = await this.repository.update(id, { Cod: retorno });
+    return updatedCiudades;
+  }
+}
 
 ```
+Finalmente se ejecuta el proyecto con el siguiente comando.
+```
+npm run start:dev
+```
+![final](https://user-images.githubusercontent.com/118281449/205787233-07e18517-ae75-4a2f-957e-bed8fd9b94dd.png)
+
+y se realizan las pruebas
+
+
 
 
