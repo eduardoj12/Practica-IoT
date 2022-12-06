@@ -1350,6 +1350,10 @@ npm run start:dev
 
 y se realizan las pruebas
 
+**METODO GET**
+![getFinal](https://user-images.githubusercontent.com/118281449/205790542-60648041-6cd5-4b87-b3db-ccda8a820bf7.png)
 
+**METODO POST**
+![postfinal](https://user-images.githubusercontent.com/118281449/205790588-ffacef38-37cc-42de-ba02-601645bd05cb.png)
 
 
